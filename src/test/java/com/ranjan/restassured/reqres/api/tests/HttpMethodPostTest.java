@@ -1,5 +1,6 @@
 package com.ranjan.restassured.reqres.api.tests;
 
+import com.ranjan.restassured.reqres.api.model.CreateUserRequest;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
@@ -35,6 +36,23 @@ public class HttpMethodPostTest extends BaseTest {
             header("x-api-key", "reqres_4c443c2fe563455e98d87adecc280679").
             contentType("application/json").
             body(requestBody).
+        when().
+            post("/api/users").
+        then().
+            statusCode(201).
+            body("name", equalTo("neo")).
+            body("job", equalTo("the one")).
+            body("id", notNullValue());
+    }
+
+    @Test
+    public void createUser_usingPojo_shouldReturn201() {
+        CreateUserRequest request = new CreateUserRequest("neo", "the one");
+
+        given().
+            header("x-api-key", "reqres_4c443c2fe563455e98d87adecc280679").
+            contentType("application/json").
+            body(request).
         when().
             post("/api/users").
         then().

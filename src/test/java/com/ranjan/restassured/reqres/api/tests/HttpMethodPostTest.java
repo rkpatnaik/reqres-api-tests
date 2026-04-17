@@ -1,12 +1,14 @@
 package com.ranjan.restassured.reqres.api.tests;
 
 import com.ranjan.restassured.reqres.api.model.CreateUserRequest;
+import com.ranjan.restassured.reqres.api.model.CreateUserResponse;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
+import static org.testng.Assert.*;
 
 public class HttpMethodPostTest extends BaseTest {
 
@@ -60,5 +62,27 @@ public class HttpMethodPostTest extends BaseTest {
             body("name", equalTo("neo")).
             body("job", equalTo("the one")).
             body("id", notNullValue());
+    }
+
+    @Test
+    public void createUser_deserializeResponse_shouldReturnValidId() {
+
+        CreateUserRequest request = new CreateUserRequest("morpheus", "dream king");
+
+        CreateUserResponse response =
+            given().
+                header("x-api-key", "reqres_4c443c2fe563455e98d87adecc280679").
+                contentType("application/json").
+                body(request).
+            when().
+                post("/api/users").
+            then().
+                statusCode(201).
+                extract().
+                as(CreateUserResponse.class);
+
+        assertNotNull(response.getId());
+        assertEquals(response.getName(), "morpheus");
+        assertEquals(response.getJob(), "dream king");
     }
 }
